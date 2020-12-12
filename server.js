@@ -19,27 +19,30 @@ app.use(express.json());
 app.use(express.static('public'));
 
 // Set up the HTML routes
+
 // GET * should return the index.html file.
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/index.html')));
 // GET /notes should return the notes.html file.
 app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, 'public/notes.html')));
 
 // Set up the API routes
+
 // GET /api/notes should read the db.json file and return all saved notes as JSON.
 app.get('/api/notes', (req, res) => {
     // Read the notes db into an array
-    // console.log(dbLocation);
     fs.readFile(dbLocation, function read(err, data) {
         if (err) {
             throw err;
         }
         // Set the notesArray equal to the returned data from the file
         notesArray = JSON.parse(data);
-        console.log(notesArray);
         // Respond with the notes array in JSON
         res.json(notesArray);
     });
+    // ?? Why can't res.json command be here?  If it's here, notesArray is empty, but it's a global variable
 });
+
+
 
 
 
