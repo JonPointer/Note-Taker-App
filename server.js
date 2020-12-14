@@ -64,9 +64,37 @@ app.post('/api/notes', (req, res) => {
             // throws an error, you could also catch it here
             if (err) throw err;
             // success case, the file was saved
-            console.log('New Note file Saved!');
+            console.log('New note saved to db file!');
             // Now return the new array of notes
             res.json(notesArray);
+        });
+    });
+});
+
+// DELETE /api/notes/:id should receive a query parameter containing the id of a note to delete
+app.delete('/api/notes/:id', (req, res) => {
+    // Capture the note id to be deleted
+    const deleteId = req.params.id;
+    // Read the notes db into an array
+    fs.readFile(dbLocation, function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        // Set the notesArray equal to the returned data from the file
+        notesArray = JSON.parse(data);
+        // Now generate a new notes array without the object that has the specified id
+        function checkId(record) {
+            return record.id != deleteId;
+        }
+        newNotesArray = notesArray.filter(checkId);
+        // Now write this new notes array to the db file
+        fs.writeFile(dbLocation, JSON.stringify(newNotesArray), (err) => {
+            // throws an error, you could also catch it here
+            if (err) throw err;
+            // success case, the file was saved
+            console.log(`Note ID: ${deleteId} removed and new file saved!`);
+            // Now return the new array of notes
+            res.json(newNotesArray);
         });
     });
 });
