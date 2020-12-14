@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cuid": "^2.1.8",
     "express": "^4.16.4"
   }
 }
