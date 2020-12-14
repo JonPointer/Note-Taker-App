@@ -68,10 +68,11 @@ const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
     text: noteText.value,
+    id: activeNote.id,  //****************  Added to enable editing an existing note
   };
   saveNote(newNote).then(() => {
     getAndRenderNotes();
-    renderActiveNote();
+    // renderActiveNote();   // ************ Removed to make the editing of an exiting note work
   });
 };
 
