@@ -42,21 +42,14 @@ app.get('/api/notes', (req, res) => {
     });
 });
 
-// POST /api/notes should receive a new note to save on the request body, add it to the db.json file, and then return the new note to the client.
-// Modified to accept the editing of an existing note.
+// POST /api/notes should receive a new note to save on the request body, add it to the db.json file, and then return the new note db to the client.
 app.post('/api/notes', (req, res) => {
     // req.body hosts is equal to the JSON post sent from the user
     const newNote = req.body;
-    let newNoteFlag = 0;  // Starts out assuming this is an existing note that is being changed
-    if (newNote.id === undefined) {
-        // This is a new note, so set an ID parameter for the note
-        let id = cuid();
-        newNote.id = id;
-        newNoteFlag = 1;  // Set the flag this that this is a new note
-    }
-    // let id = cuid();
-    // newNote.id = id;
-    // Now, need to add this note to the db.json file
+    // This is a new note, so set an ID parameter for the note
+    let id = cuid();
+    newNote.id = id;
+    // Now, we need to add this note to the db.json file
     // First, read the array of note objects from the file
     fs.readFile(dbLocation, function read(err, data) {
         if (err) {
@@ -64,24 +57,9 @@ app.post('/api/notes', (req, res) => {
         }
         // Set the notesArray equal to the returned data from the file
         notesArray = JSON.parse(data);
-        // If this is a new note, then add the note to this array
-        if (newNoteFlag === 1) {
-            notesArray = [...notesArray, newNote];
-            // Now the notesArray has been updated with the new note and is ready to be saved.
-
-        } else {
-            // this is not a new note, we want to replace the values for this record in the array
-            // First, find the object in the array that has the id of the passed object
-            // and then update its Title and Text
-            for (i = 0; i < notesArray.length; i++) {
-                if (notesArray[i].id === newNote.id) {
-                    notesArray[i].title = newNote.title;
-                    notesArray[i].text = newNote.text;
-                }
-            }
-            // Now the notesArray has been updated with the changed note and is ready to be saved.
-        }
-        // nowWrite this notes array to the db file
+        // Now add the note to this array
+        notesArray = [...notesArray, newNote];
+        // now write this notes array to the db file
         fs.writeFile(dbLocation, JSON.stringify(notesArray), (err) => {
             // throws an error, you could also catch it here
             if (err) throw err;
@@ -92,6 +70,42 @@ app.post('/api/notes', (req, res) => {
         });
     });
 });
+
+
+// PATCH - New added capability - this should receive a modified note and update the db with the text and title changes.
+app.patch('/api/notes', (req, res) => {
+    // req.body hosts is equal to the JSON post sent from the user
+    const newNote = req.body;
+    // The note already has an id, so no need to set one.
+    // We need to update this note in the db.json file.
+    // First, read the array of note objects from the file
+    fs.readFile(dbLocation, function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        // Set the notesArray equal to the returned data from the file
+        notesArray = JSON.parse(data);
+        // Now find the object in the array that has the id of the passed object
+        // and then update its Title and Text
+        for (i = 0; i < notesArray.length; i++) {
+            if (notesArray[i].id === newNote.id) {
+                notesArray[i].title = newNote.title;
+                notesArray[i].text = newNote.text;
+            }
+            // Now the notesArray has been updated with the changed note and is ready to be saved.
+        }
+        // Now we write this notes array to the db file
+        fs.writeFile(dbLocation, JSON.stringify(notesArray), (err) => {
+            // throws an error, you could also catch it here
+            if (err) throw err;
+            // success case, the file was saved
+            console.log('The modified note has been saved to db file!');
+            // Now return the new array of notes
+            res.json(notesArray);
+        });
+    });
+});
+
 
 // DELETE /api/notes/:id should receive a query parameter containing the id of a note to delete
 app.delete('/api/notes/:id', (req, res) => {
@@ -114,7 +128,7 @@ app.delete('/api/notes/:id', (req, res) => {
             // throws an error, you could also catch it here
             if (err) throw err;
             // success case, the file was saved
-            console.log(`Note ID: ${deleteId} removed and new file saved!`);
+            console.log(`Note ID: ${deleteId} removed and the new file has been saved!`);
             // Now return the new array of notes
             res.json(newNotesArray);
         });

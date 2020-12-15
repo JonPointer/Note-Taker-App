@@ -33,9 +33,22 @@ const getNotes = () =>
     },
   });
 
+// Posting a new note
 const saveNote = (note) =>
+  // This is a new note w/o an id to be posted 
   fetch('/api/notes', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(note),
+  });
+
+//  Added PATCH route to modify existing notes
+const modNote = (note) =>
+  // This is an existing id to be modified 
+  fetch('/api/notes', {
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -68,12 +81,18 @@ const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
     text: noteText.value,
-    id: activeNote.id,  //****************  Added to enable editing an existing note
+    id: activeNote.id,  //****************  Added to enable editing an existing note 
   };
-  saveNote(newNote).then(() => {
-    getAndRenderNotes();
-    // renderActiveNote();   // ************ Removed to make the editing of an exiting note work
-  });
+  if (!activeNote.id) {  // New note w/o an id
+    saveNote(newNote).then(() => {
+      getAndRenderNotes();
+      // renderActiveNote();   // ************ Removed to make the editing of an exiting note work
+    });
+  } else {   //Existing note with id to be modified
+    modNote(newNote).then(() => {
+      getAndRenderNotes();
+    });
+  }
 };
 
 // Delete the clicked note
