@@ -4,7 +4,7 @@
 
 ## Description
 
-An application for keeping track of notes or to do items. Front end was provided and task was to deploy a server and create needed routes to display pages, add new notes, display existing notes, and delete notes. I added extra functionality outside of requirements to enable editing of existing notes.
+An application for keeping track of notes or to do items. Front end was provided and task was to deploy a server and create needed routes to display HTML pages, add new notes, display existing notes, and delete notes. I added extra functionality outside of the requirements to enable editing of existing notes.
 
 ## Table of Contents
 
